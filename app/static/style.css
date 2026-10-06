@@ -104,7 +104,8 @@ h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
 .field input, .field select { display: block; width: 100%; margin-top: 7px; padding: 12px 0; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--line); outline: 0; font: 14px "Manrope", sans-serif; color-scheme: dark; }
 .field input:focus, .field select:focus { border-color: var(--amber); }
 .field-row { display: flex; gap: 15px; margin-top: 15px; }
-.field input[type="date"], .field input[type="time"] { min-height: 48px; padding: 10px 8px; border: 1px solid var(--line); background: #171e29; font: 600 17px "DM Mono", monospace; color-scheme: dark; }
+.field input[type="date"], .field input[name="start-time"], .field input[name="end-time"] { min-height: 48px; padding: 10px 8px; border: 1px solid var(--line); background: #171e29; font: 600 17px "DM Mono", monospace; color-scheme: dark; }
+.money-field input { min-height: 58px; padding: 12px 10px; border: 1px solid rgba(255, 184, 77, .28); background: #171e29; font: 600 20px "DM Mono", monospace; }
 .field--wide { margin-top: 15px; }
 .submit-button { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 23px; padding: 13px 14px; color: #12151a; background: var(--amber); border: 0; font-size: 12px; font-weight: 800; transition: .2s; }
 .submit-button:hover { background: #ffd18a; transform: translateY(-2px); }

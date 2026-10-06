@@ -56,6 +56,15 @@ function prepareTripForm() {
   form.elements["end-time"].value = "12:30";
 }
 
+function normalizeTime(value, label) {
+  const match = value.trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) throw new Error(`${label}: используйте формат ЧЧ:ММ, например 23:58`);
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) throw new Error(`${label}: укажите время от 00:00 до 23:59`);
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+}
+
 function offsetIso(localValue) {
   const localDate = new Date(localValue);
   const offset = -localDate.getTimezoneOffset();
@@ -223,17 +232,19 @@ elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
   setFormError();
   const formData = new FormData(elements.form);
-  const startLocal = `${formData.get("start-date")}T${formData.get("start-time")}`;
-  const endLocal = `${formData.get("end-date")}T${formData.get("end-time")}`;
-  const payload = {
-    id: formData.get("id"),
-    start: offsetIso(startLocal),
-    end: offsetIso(endLocal),
-    amount: Number(formData.get("amount")),
-    payment: formData.get("payment"),
-    commission: Number(formData.get("commission")),
-  };
   try {
+    const startTime = normalizeTime(formData.get("start-time"), "Время начала");
+    const endTime = normalizeTime(formData.get("end-time"), "Время окончания");
+    const startLocal = `${formData.get("start-date")}T${startTime}`;
+    const endLocal = `${formData.get("end-date")}T${endTime}`;
+    const payload = {
+      id: formData.get("id"),
+      start: offsetIso(startLocal),
+      end: offsetIso(endLocal),
+      amount: Number(formData.get("amount")),
+      payment: formData.get("payment"),
+      commission: Number(formData.get("commission")),
+    };
     const response = await fetch("/api/trips", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const body = await response.json();
     if (!response.ok) throw new Error(getApiErrorMessage(body));

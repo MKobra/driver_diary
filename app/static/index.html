@@ -135,15 +135,15 @@
                   <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
                   <div class="field-row">
                     <label class="field">Дата начала<input name="start-date" type="date" required></label>
-                    <label class="field">Время начала<input name="start-time" type="time" step="60" required></label>
+                    <label class="field">Время начала<input name="start-time" type="text" inputmode="numeric" maxlength="5" placeholder="23:58" autocomplete="off" required></label>
                   </div>
                   <div class="field-row">
                     <label class="field">Дата окончания<input name="end-date" type="date" required></label>
-                    <label class="field">Время окончания<input name="end-time" type="time" step="60" required></label>
+                    <label class="field">Время окончания<input name="end-time" type="text" inputmode="numeric" maxlength="5" placeholder="00:22" autocomplete="off" required></label>
                   </div>
-                <div class="field-row">
-                  <label class="field">Сумма, ₽<input name="amount" type="number" min="1" step="1" required></label>
-                  <label class="field">Комиссия, ₽<input name="commission" type="number" min="0" step="1" required></label>
+                  <div class="field-row">
+                  <label class="field money-field">Сумма, ₽<input name="amount" type="number" min="1" step="1" required></label>
+                  <label class="field money-field">Комиссия, ₽<input name="commission" type="number" min="0" step="1" required></label>
                 </div>
                 <label class="field field--wide">Оплата
                   <select name="payment"><option value="cash">Наличные</option><option value="card">Карта</option></select>
