@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -29,3 +29,20 @@ class Trip(BaseModel):
 class TripResponse(BaseModel):
     message: str
     trip: Trip
+
+
+class PaymentSummary(BaseModel):
+    trips_count: int = 0
+    revenue: int = 0
+    commission: int = 0
+    net: int = 0
+
+
+class DaySummary(BaseModel):
+    date: date
+    trips_count: int
+    revenue: int
+    commission: int
+    net: int
+    cash: PaymentSummary
+    card: PaymentSummary

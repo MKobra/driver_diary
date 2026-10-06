@@ -3,8 +3,9 @@ from datetime import date
 from fastapi import FastAPI, Query, Response
 
 from app.config import TRIPS_FILE
-from app.models import Trip, TripResponse
+from app.models import DaySummary, Trip, TripResponse
 from app.storage import TripStorage
+from app.summary import calculate_summary
 
 
 app = FastAPI(title="Driver Diary")
@@ -20,6 +21,12 @@ async def health_check() -> dict[str, str]:
 async def get_trips(selected_date: date = Query(alias="date")) -> list[Trip]:
     trips = await storage.list_trips()
     return [trip for trip in trips if trip.start.date() == selected_date]
+
+
+@app.get("/api/summary", response_model=DaySummary)
+async def get_summary(selected_date: date = Query(alias="date")) -> DaySummary:
+    trips = await storage.list_trips()
+    return calculate_summary(trips, selected_date)
 
 
 @app.post("/api/trips", response_model=TripResponse)
