@@ -254,6 +254,7 @@ elements.form.addEventListener("submit", async (event) => {
     const response = await fetch("/api/trips", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const body = await response.json();
     if (!response.ok) throw new Error(getApiErrorMessage(body));
+    if (!body.created) throw new Error(body.message);
     setNotice(body.message);
     if (response.status === 201) elements.form.reset();
     await loadDay(true);

@@ -29,6 +29,7 @@ class Trip(BaseModel):
 class TripResponse(BaseModel):
     message: str
     trip: Trip
+    created: bool
 
 
 class TripPage(BaseModel):

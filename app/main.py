@@ -57,7 +57,7 @@ async def create_trip(trip: Trip, response: Response) -> TripResponse:
         raise HTTPException(status_code=409, detail=str(error)) from error
     response.status_code = 201 if created else 200
     message = "Поездка добавлена" if created else f"Поездка с id={trip.id} уже существует"
-    return TripResponse(message=message, trip=stored_trip)
+    return TripResponse(message=message, trip=stored_trip, created=created)
 
 
 @app.get("/", include_in_schema=False)
