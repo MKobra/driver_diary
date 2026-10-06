@@ -45,3 +45,29 @@ def test_register_rejects_mismatched_passwords_and_duplicate_phone(client: TestC
     assert mismatched.status_code == 422
     assert first.status_code == 201
     assert duplicate.status_code == 409
+
+
+def test_login_rejects_wrong_password_and_logout_expires_session(client: TestClient) -> None:
+    client.post(
+        "/api/auth/register",
+        json={
+            "phone": "79001234567",
+            "password": "strong-pass-1",
+            "password_confirm": "strong-pass-1",
+        },
+    )
+
+    wrong_password = client.post(
+        "/api/auth/login",
+        json={"phone": "79001234567", "password": "wrong-pass"},
+    )
+    logged_in = client.post(
+        "/api/auth/login",
+        json={"phone": "79001234567", "password": "strong-pass-1"},
+    )
+    logged_out = client.post("/api/auth/logout")
+
+    assert wrong_password.status_code == 401
+    assert logged_in.status_code == 200
+    assert logged_out.status_code == 200
+    assert client.get("/api/auth/me").status_code == 401
