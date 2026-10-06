@@ -48,24 +48,12 @@ function getApiErrorMessage(body) {
   return "Не удалось сохранить поездку";
 }
 
-function fillTimeSelects() {
-  const hours = Array.from({ length: 24 }, (_, value) => String(value).padStart(2, "0"));
-  const minutes = Array.from({ length: 12 }, (_, value) => String(value * 5).padStart(2, "0"));
-  ["start-hour", "end-hour"].forEach((name) => {
-    document.querySelector(`[name="${name}"]`).innerHTML = hours.map((value) => `<option value="${value}">${value}</option>`).join("");
-  });
-  ["start-minute", "end-minute"].forEach((name) => {
-    document.querySelector(`[name="${name}"]`).innerHTML = minutes.map((value) => `<option value="${value}">${value}</option>`).join("");
-  });
-}
-
 function prepareTripForm() {
   const form = elements.form;
-  form.elements["trip-date"].value = elements.date.value;
-  form.elements["start-hour"].value = "12";
-  form.elements["start-minute"].value = "00";
-  form.elements["end-hour"].value = "12";
-  form.elements["end-minute"].value = "30";
+  form.elements["start-date"].value = elements.date.value;
+  form.elements["start-time"].value = "12:00";
+  form.elements["end-date"].value = elements.date.value;
+  form.elements["end-time"].value = "12:30";
 }
 
 function offsetIso(localValue) {
@@ -217,7 +205,6 @@ function setModalState(isOpen) {
   }
 }
 
-fillTimeSelects();
 document.querySelector("#open-add-modal").addEventListener("click", () => setModalState(true));
 document.querySelector("#close-add-modal").addEventListener("click", () => {
   setFormError();
@@ -236,9 +223,8 @@ elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
   setFormError();
   const formData = new FormData(elements.form);
-  const tripDate = formData.get("trip-date");
-  const startLocal = `${tripDate}T${formData.get("start-hour")}:${formData.get("start-minute")}`;
-  const endLocal = `${tripDate}T${formData.get("end-hour")}:${formData.get("end-minute")}`;
+  const startLocal = `${formData.get("start-date")}T${formData.get("start-time")}`;
+  const endLocal = `${formData.get("end-date")}T${formData.get("end-time")}`;
   const payload = {
     id: formData.get("id"),
     start: offsetIso(startLocal),
