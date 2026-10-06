@@ -48,6 +48,26 @@ function getApiErrorMessage(body) {
   return "Не удалось сохранить поездку";
 }
 
+function fillTimeSelects() {
+  const hours = Array.from({ length: 24 }, (_, value) => String(value).padStart(2, "0"));
+  const minutes = Array.from({ length: 12 }, (_, value) => String(value * 5).padStart(2, "0"));
+  ["start-hour", "end-hour"].forEach((name) => {
+    document.querySelector(`[name="${name}"]`).innerHTML = hours.map((value) => `<option value="${value}">${value}</option>`).join("");
+  });
+  ["start-minute", "end-minute"].forEach((name) => {
+    document.querySelector(`[name="${name}"]`).innerHTML = minutes.map((value) => `<option value="${value}">${value}</option>`).join("");
+  });
+}
+
+function prepareTripForm() {
+  const form = elements.form;
+  form.elements["trip-date"].value = elements.date.value;
+  form.elements["start-hour"].value = "12";
+  form.elements["start-minute"].value = "00";
+  form.elements["end-hour"].value = "12";
+  form.elements["end-minute"].value = "30";
+}
+
 function offsetIso(localValue) {
   const localDate = new Date(localValue);
   const offset = -localDate.getTimezoneOffset();
@@ -191,9 +211,13 @@ function setModalState(isOpen) {
   elements.addModal.classList.toggle("is-open", isOpen);
   elements.addModal.setAttribute("aria-hidden", String(!isOpen));
   document.body.classList.toggle("modal-open", isOpen || elements.tripModal.classList.contains("is-open"));
-  if (isOpen) setFormError();
+  if (isOpen) {
+    prepareTripForm();
+    setFormError();
+  }
 }
 
+fillTimeSelects();
 document.querySelector("#open-add-modal").addEventListener("click", () => setModalState(true));
 document.querySelector("#close-add-modal").addEventListener("click", () => {
   setFormError();
@@ -212,10 +236,13 @@ elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
   setFormError();
   const formData = new FormData(elements.form);
+  const tripDate = formData.get("trip-date");
+  const startLocal = `${tripDate}T${formData.get("start-hour")}:${formData.get("start-minute")}`;
+  const endLocal = `${tripDate}T${formData.get("end-hour")}:${formData.get("end-minute")}`;
   const payload = {
     id: formData.get("id"),
-    start: offsetIso(formData.get("start")),
-    end: offsetIso(formData.get("end")),
+    start: offsetIso(startLocal),
+    end: offsetIso(endLocal),
     amount: Number(formData.get("amount")),
     payment: formData.get("payment"),
     commission: Number(formData.get("commission")),

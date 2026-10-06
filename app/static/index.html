@@ -130,13 +130,14 @@
                 <span class="form-error-icon">!</span>
                 <span id="form-error-message"></span>
                 <button id="close-form-error" type="button" aria-label="Закрыть сообщение об ошибке">×</button>
-              </div>
-              <form id="trip-form">
-                <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
-                <div class="field-row">
-                  <label class="field">Начало<input name="start" type="datetime-local" required></label>
-                  <label class="field">Конец<input name="end" type="datetime-local" required></label>
                 </div>
+                <form id="trip-form">
+                  <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
+                  <label class="field field--wide">Дата поездки<input name="trip-date" type="date" required></label>
+                  <div class="field-row">
+                  <div class="field time-field"><span>Начало</span><div class="time-picker"><select name="start-hour" aria-label="Часы начала"></select><b>:</b><select name="start-minute" aria-label="Минуты начала"></select></div></div>
+                  <div class="field time-field"><span>Конец</span><div class="time-picker"><select name="end-hour" aria-label="Часы окончания"></select><b>:</b><select name="end-minute" aria-label="Минуты окончания"></select></div></div>
+                  </div>
                 <div class="field-row">
                   <label class="field">Сумма, ₽<input name="amount" type="number" min="1" step="1" required></label>
                   <label class="field">Комиссия, ₽<input name="commission" type="number" min="0" step="1" required></label>
