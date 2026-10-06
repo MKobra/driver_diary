@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10151f">
+    <title>Дневник смены</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/">
+          <span class="brand-mark" aria-hidden="true">↗</span>
+          <span>
+            <strong>SHIFTLOG</strong>
+            <small>дневник водителя</small>
+          </span>
+        </a>
+        <div class="status-pill"><span class="status-dot"></span> онлайн</div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <p class="eyebrow">ЛИЧНАЯ ПАНЕЛЬ / СМЕНА</p>
+            <h1>День под<br><em>контролем.</em></h1>
+          </div>
+          <div class="date-control">
+            <button class="date-arrow" id="previous-day" type="button" aria-label="Предыдущий день">←</button>
+            <label>
+              <span>выбранная дата</span>
+              <input id="selected-date" type="date">
+            </label>
+            <button class="date-arrow" id="next-day" type="button" aria-label="Следующий день">→</button>
+          </div>
+        </section>
+
+        <div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+        <section class="summary-grid" aria-label="Сводка за день">
+          <article class="metric-card metric-card--hero">
+            <span class="metric-label">на руки</span>
+            <strong id="net-total">0 ₽</strong>
+            <span class="metric-note" id="day-label">за выбранный день</span>
+            <span class="card-spark" aria-hidden="true"></span>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">выручка</span>
+            <strong id="revenue-total">0 ₽</strong>
+            <span class="metric-note">до вычета комиссии</span>
+          </article>
+          <article class="metric-card">
+            <span class="metric-label">комиссия</span>
+            <strong id="commission-total">0 ₽</strong>
+            <span class="metric-note">сервисные расходы</span>
+          </article>
+          <article class="metric-card metric-card--count">
+            <span class="metric-label">поездки</span>
+            <strong id="trips-total">0</strong>
+            <span class="metric-note">завершено за день</span>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <div class="ledger-panel panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">ЖУРНАЛ</p>
+                <h2>Поездки</h2>
+              </div>
+              <span class="count-badge" id="trips-badge">0 записей</span>
+            </div>
+            <div class="trip-list" id="trip-list">
+              <div class="loading-state">Загрузка журнала<span class="loading-dots">...</span></div>
+            </div>
+          </div>
+
+          <aside class="side-column">
+            <section class="payment-panel panel">
+              <div class="panel-heading panel-heading--compact">
+                <div>
+                  <p class="eyebrow">РАЗБИВКА</p>
+                  <h2>Оплата</h2>
+                </div>
+              </div>
+              <div class="payment-row">
+                <span class="payment-icon payment-icon--cash">₽</span>
+                <div><strong>Наличные</strong><small id="cash-count">0 поездок</small></div>
+                <b id="cash-total">0 ₽</b>
+              </div>
+              <div class="payment-row">
+                <span class="payment-icon payment-icon--card">▣</span>
+                <div><strong>Карта</strong><small id="card-count">0 поездок</small></div>
+                <b id="card-total">0 ₽</b>
+              </div>
+            </section>
+
+            <section class="add-panel panel">
+              <div class="panel-heading panel-heading--compact">
+                <div>
+                  <p class="eyebrow">НОВАЯ ЗАПИСЬ</p>
+                  <h2>Добавить поездку</h2>
+                </div>
+              </div>
+              <form id="trip-form">
+                <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
+                <div class="field-row">
+                  <label class="field">Начало<input name="start" type="datetime-local" required></label>
+                  <label class="field">Конец<input name="end" type="datetime-local" required></label>
+                </div>
+                <div class="field-row">
+                  <label class="field">Сумма, ₽<input name="amount" type="number" min="1" step="1" required></label>
+                  <label class="field">Комиссия, ₽<input name="commission" type="number" min="0" step="1" required></label>
+                </div>
+                <label class="field field--wide">Оплата
+                  <select name="payment"><option value="cash">Наличные</option><option value="card">Карта</option></select>
+                </label>
+                <button class="submit-button" type="submit"><span>Сохранить поездку</span><b>↗</b></button>
+              </form>
+            </section>
+          </aside>
+        </section>
+      </main>
+
+      <footer><span>SHIFTLOG / v0.1</span><span>данные хранятся локально</span></footer>
+    </div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

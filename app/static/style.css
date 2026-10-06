@@ -1,0 +1,113 @@
+:root {
+  --ink: #edf1f2;
+  --muted: #8d98a2;
+  --line: rgba(215, 226, 231, .12);
+  --panel: rgba(25, 32, 43, .8);
+  --bg: #10151f;
+  --amber: #ffb84d;
+  --cyan: #7de1d1;
+  --red: #ff846e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background: var(--bg);
+  font-family: "Manrope", sans-serif;
+  background-image: radial-gradient(circle at 84% 4%, rgba(255, 184, 77, .12), transparent 28rem), linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: auto, 42px 42px, 42px 42px;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.shell { width: min(1380px, calc(100% - 56px)); margin: auto; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 22px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.brand-mark { display: grid; place-items: center; width: 32px; height: 32px; color: #17130c; background: var(--amber); border-radius: 50%; font-size: 21px; font-weight: 800; }
+.brand strong, .brand small { display: block; line-height: 1; }
+.brand strong { letter-spacing: .15em; font-size: 13px; }
+.brand small { margin-top: 5px; color: var(--muted); font-size: 10px; letter-spacing: .04em; }
+.status-pill { color: var(--cyan); border: 1px solid rgba(125,225,209,.25); border-radius: 99px; padding: 7px 11px; font-family: "DM Mono", monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.status-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan); }
+.hero { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 76px 0 52px; }
+.eyebrow { margin: 0 0 12px; color: var(--amber); font: 500 10px "DM Mono", monospace; letter-spacing: .18em; }
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 0; font-size: clamp(48px, 7vw, 96px); line-height: .9; letter-spacing: -.07em; font-weight: 800; }
+h1 em { color: var(--amber); font-style: normal; }
+h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
+.date-control { display: flex; align-items: center; gap: 12px; padding-bottom: 7px; }
+.date-control label span { display: block; margin: 0 0 7px 2px; color: var(--muted); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.date-control input { width: 164px; padding: 10px 0; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--amber); outline: 0; font: 500 15px "DM Mono", monospace; color-scheme: dark; }
+.date-arrow { width: 32px; height: 32px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 50%; transition: .2s; }
+.date-arrow:hover { color: #10151f; background: var(--amber); border-color: var(--amber); }
+.notice { min-height: 0; margin-bottom: 18px; color: var(--cyan); font: 12px "DM Mono", monospace; }
+.notice:not(:empty) { padding: 12px 14px; border-left: 2px solid var(--cyan); background: rgba(125,225,209,.08); }
+.notice.error { color: var(--red); border-color: var(--red); background: rgba(255,132,110,.08); }
+.summary-grid { display: grid; grid-template-columns: 1.45fr 1fr 1fr .75fr; gap: 12px; }
+.metric-card, .panel { border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(14px); }
+.metric-card { position: relative; min-height: 167px; padding: 23px; overflow: hidden; }
+.metric-card--hero { color: #131313; background: var(--amber); border-color: var(--amber); }
+.metric-card--count { background: rgba(125,225,209,.12); border-color: rgba(125,225,209,.22); }
+.metric-label { display: block; margin-bottom: 20px; font: 10px "DM Mono", monospace; text-transform: uppercase; letter-spacing: .12em; opacity: .7; }
+.metric-card strong { display: block; font: 500 clamp(28px, 3.4vw, 46px) "DM Mono", monospace; letter-spacing: -.08em; }
+.metric-note { position: absolute; bottom: 21px; color: inherit; opacity: .58; font-size: 11px; }
+.card-spark { position: absolute; right: -5px; bottom: -25px; width: 150px; height: 90px; border-top: 2px solid rgba(0,0,0,.35); border-radius: 50%; transform: rotate(-14deg); }
+.content-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(310px, .75fr); gap: 12px; margin-top: 12px; }
+.panel { padding: 25px; }
+.panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.panel-heading--compact { padding-bottom: 16px; }
+.count-badge { padding: 6px 8px; color: var(--muted); border: 1px solid var(--line); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.trip-list { min-height: 260px; }
+.trip-row { display: grid; grid-template-columns: 66px 1fr auto auto; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); animation: appear .3s ease both; }
+.trip-time { color: var(--amber); font: 14px "DM Mono", monospace; }
+.trip-id { margin-bottom: 4px; font-size: 13px; font-weight: 700; }
+.trip-route { color: var(--muted); font-size: 11px; }
+.trip-payment { padding: 5px 8px; color: var(--muted); border: 1px solid var(--line); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.trip-amount { font: 15px "DM Mono", monospace; }
+.loading-state, .empty-state { padding: 72px 12px; color: var(--muted); text-align: center; font: 12px "DM Mono", monospace; }
+.loading-dots { color: var(--amber); animation: blink 1s infinite; }
+.side-column { display: grid; gap: 12px; align-content: start; }
+.payment-row { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 11px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.payment-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.payment-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font: 16px "DM Mono", monospace; }
+.payment-icon--cash { color: #10151f; background: var(--amber); }
+.payment-icon--card { color: #10151f; background: var(--cyan); }
+.payment-row strong, .payment-row small { display: block; }
+.payment-row strong { font-size: 12px; }
+.payment-row small { margin-top: 3px; color: var(--muted); font: 10px "DM Mono", monospace; }
+.payment-row b { font: 14px "DM Mono", monospace; }
+.field { display: block; flex: 1; color: var(--muted); font: 10px "DM Mono", monospace; text-transform: uppercase; }
+.field input, .field select { display: block; width: 100%; margin-top: 7px; padding: 10px 0; color: var(--ink); background: transparent; border: 0; border-bottom: 1px solid var(--line); outline: 0; font: 12px "Manrope", sans-serif; color-scheme: dark; }
+.field input:focus, .field select:focus { border-color: var(--amber); }
+.field-row { display: flex; gap: 15px; margin-top: 15px; }
+.field--wide { margin-top: 15px; }
+.submit-button { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 23px; padding: 13px 14px; color: #12151a; background: var(--amber); border: 0; font-size: 12px; font-weight: 800; transition: .2s; }
+.submit-button:hover { background: #ffd18a; transform: translateY(-2px); }
+.submit-button b { font-size: 18px; }
+footer { display: flex; justify-content: space-between; padding: 24px 0 35px; color: var(--muted); font: 9px "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+@keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 50% { opacity: .2; } }
+@media (max-width: 850px) {
+  .shell { width: min(100% - 32px, 620px); }
+  .hero { align-items: start; flex-direction: column; padding: 48px 0 35px; }
+  .date-control { align-self: stretch; justify-content: space-between; }
+  .date-control label { flex: 1; }
+  .date-control input { width: 100%; }
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .metric-card--hero { grid-column: span 2; }
+  .content-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .shell { width: calc(100% - 24px); }
+  .topbar { padding-top: 18px; }
+  h1 { font-size: 57px; }
+  .panel { padding: 18px; }
+  .metric-card { min-height: 145px; padding: 18px; }
+  .trip-row { grid-template-columns: 55px 1fr auto; gap: 10px; }
+  .trip-payment { display: none; }
+  .field-row { gap: 10px; }
+  footer { padding-bottom: 20px; }
+}

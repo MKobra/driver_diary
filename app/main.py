@@ -1,8 +1,10 @@
 from datetime import date
 
 from fastapi import FastAPI, Query, Response
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.config import TRIPS_FILE
+from app.config import INDEX_FILE, STATIC_DIR, TRIPS_FILE
 from app.models import DaySummary, Trip, TripResponse
 from app.storage import TripStorage
 from app.summary import calculate_summary
@@ -35,3 +37,11 @@ async def create_trip(trip: Trip, response: Response) -> TripResponse:
     response.status_code = 201 if created else 200
     message = "Поездка добавлена" if created else f"Поездка с id={trip.id} уже существует"
     return TripResponse(message=message, trip=stored_trip)
+
+
+@app.get("/", include_in_schema=False)
+async def index() -> FileResponse:
+    return FileResponse(INDEX_FILE)
+
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
