@@ -65,6 +65,11 @@ function normalizeTime(value, label) {
   return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
 }
 
+function maskTimeInput(event) {
+  const digits = event.target.value.replace(/\D/g, "").slice(0, 4);
+  event.target.value = digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits;
+}
+
 function offsetIso(localValue) {
   const localDate = new Date(localValue);
   const offset = -localDate.getTimezoneOffset();
@@ -223,6 +228,7 @@ document.querySelector("#close-form-error").addEventListener("click", () => setF
 elements.addModal.addEventListener("click", (event) => {
   if (event.target === elements.addModal) setModalState(false);
 });
+document.querySelectorAll('[name$="-time"]').forEach((input) => input.addEventListener("input", maskTimeInput));
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && elements.addModal.classList.contains("is-open")) setModalState(false);
   if (event.key === "Escape" && elements.tripModal.classList.contains("is-open")) setTripModalState(false);
