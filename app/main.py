@@ -14,7 +14,6 @@ from app.config import (
     SESSION_SECRET,
     STATIC_DIR,
     TRIPS_FILE,
-    TRIP_TEMPLATES_FILE,
     USERS_FILE,
 )
 from app.models import (
@@ -50,7 +49,6 @@ async def register(payload: RegisterRequest, response: Response) -> AuthResponse
         raise HTTPException(status_code=409, detail="Пользователь с таким телефоном уже существует")
     if is_first_user:
         await storage.assign_legacy_trips(user.id)
-        await storage.seed_templates(TRIP_TEMPLATES_FILE, user.id)
     _set_session_cookie(response, user.id)
     return AuthResponse(message="Регистрация выполнена", user=UserPublic(id=user.id, phone=user.phone))
 
