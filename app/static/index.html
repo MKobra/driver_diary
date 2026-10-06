@@ -126,6 +126,11 @@
                 </div>
                 <button class="modal-close" id="close-add-modal" type="button" aria-label="Закрыть окно">×</button>
               </div>
+              <div class="form-error-popup" id="form-error" role="alert" aria-live="assertive" hidden>
+                <span class="form-error-icon">!</span>
+                <span id="form-error-message"></span>
+                <button id="close-form-error" type="button" aria-label="Закрыть сообщение об ошибке">×</button>
+              </div>
               <form id="trip-form">
                 <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
                 <div class="field-row">

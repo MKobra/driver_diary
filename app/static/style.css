@@ -109,6 +109,7 @@ h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
 .submit-button:hover { background: #ffd18a; transform: translateY(-2px); }
 .submit-button b { font-size: 18px; }
 .add-layout { display: grid; grid-template-columns: minmax(0, 620px) minmax(240px, 1fr); align-items: start; gap: 42px; }
+.add-panel { position: relative; }
 .add-hint { padding: 28px 0; }
 .hint-number { display: block; margin-bottom: 42px; color: var(--amber); font: 42px "DM Mono", monospace; letter-spacing: -.12em; }
 .add-hint h2 { max-width: 320px; margin-bottom: 18px; font-size: clamp(26px, 3vw, 38px); line-height: 1.05; }
@@ -119,6 +120,11 @@ h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
 .modal.is-open .add-layout { transform: translateY(0); }
 .modal-close { width: 34px; height: 34px; color: var(--muted); background: transparent; border: 1px solid var(--line); font-size: 24px; line-height: 1; }
 .modal-close:hover { color: var(--ink); border-color: var(--amber); }
+.form-error-popup { position: absolute; z-index: 2; top: 88px; right: 28px; left: 28px; display: flex; align-items: center; gap: 10px; padding: 13px 14px; color: #ffe9e5; background: #542b2d; border: 1px solid rgba(255, 132, 110, .75); box-shadow: 0 12px 30px rgba(0, 0, 0, .3); font-size: 13px; line-height: 1.35; }
+.form-error-popup[hidden] { display: none; }
+.form-error-icon { display: grid; flex: 0 0 22px; place-items: center; width: 22px; height: 22px; color: #542b2d; background: var(--red); border-radius: 50%; font-weight: 800; }
+.form-error-popup button { flex: 0 0 24px; margin-left: auto; color: #ffd8d2; background: transparent; border: 0; font-size: 20px; line-height: 1; }
+.form-error-popup button:hover { color: white; }
 .trip-detail-dialog { width: min(100%, 620px); padding: 28px; }
 .detail-meta { display: flex; justify-content: space-between; padding: 20px 0; color: var(--muted); font: 12px "DM Mono", monospace; text-transform: uppercase; }
 .detail-times { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -158,6 +164,7 @@ footer { display: flex; justify-content: space-between; padding: 24px 0 35px; co
   .add-trip-button { padding: 11px 10px; font-size: 12px; }
   .modal { padding: 12px; }
   .modal .add-layout { max-height: calc(100vh - 24px); padding: 18px; }
+  .form-error-popup { top: 76px; right: 18px; left: 18px; }
   .trip-detail-dialog { padding: 18px; }
   .detail-times strong { font-size: 22px; }
   .detail-money { grid-template-columns: 1fr; }

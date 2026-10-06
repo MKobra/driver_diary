@@ -16,6 +16,8 @@ const elements = {
   cashCount: document.querySelector("#cash-count"),
   cardCount: document.querySelector("#card-count"),
   addModal: document.querySelector("#add-modal"),
+  formError: document.querySelector("#form-error"),
+  formErrorMessage: document.querySelector("#form-error-message"),
   tripModal: document.querySelector("#trip-modal"),
   tripDetailTitle: document.querySelector("#trip-detail-title"),
   tripDetailContent: document.querySelector("#trip-detail-content"),
@@ -31,6 +33,15 @@ const displayDate = (value) => new Intl.DateTimeFormat("ru-RU", { day: "2-digit"
 function setNotice(message = "", isError = false) {
   elements.notice.textContent = message;
   elements.notice.classList.toggle("error", isError);
+}
+
+function setFormError(message = "") {
+  elements.formErrorMessage.textContent = message;
+  elements.formError.hidden = !message;
+}
+
+function getApiErrorMessage(body) {
+  return body.detail?.map((error) => error.msg.replace(/^Value error,\s*/i, "")).join("; ") || "Не удалось сохранить поездку";
 }
 
 function offsetIso(localValue) {
@@ -176,10 +187,15 @@ function setModalState(isOpen) {
   elements.addModal.classList.toggle("is-open", isOpen);
   elements.addModal.setAttribute("aria-hidden", String(!isOpen));
   document.body.classList.toggle("modal-open", isOpen || elements.tripModal.classList.contains("is-open"));
+  if (isOpen) setFormError();
 }
 
 document.querySelector("#open-add-modal").addEventListener("click", () => setModalState(true));
-document.querySelector("#close-add-modal").addEventListener("click", () => setModalState(false));
+document.querySelector("#close-add-modal").addEventListener("click", () => {
+  setFormError();
+  setModalState(false);
+});
+document.querySelector("#close-form-error").addEventListener("click", () => setFormError());
 elements.addModal.addEventListener("click", (event) => {
   if (event.target === elements.addModal) setModalState(false);
 });
@@ -190,6 +206,7 @@ document.addEventListener("keydown", (event) => {
 
 elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  setFormError();
   const formData = new FormData(elements.form);
   const payload = {
     id: formData.get("id"),
@@ -202,13 +219,13 @@ elements.form.addEventListener("submit", async (event) => {
   try {
     const response = await fetch("/api/trips", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const body = await response.json();
-    if (!response.ok) throw new Error(body.detail?.map((error) => error.msg).join(", ") || "Не удалось сохранить поездку");
+    if (!response.ok) throw new Error(getApiErrorMessage(body));
     setNotice(body.message);
     if (response.status === 201) elements.form.reset();
     await loadDay(true);
     setModalState(false);
   } catch (error) {
-    setNotice(error.message, true);
+    setFormError(error.message);
   }
 });
 
