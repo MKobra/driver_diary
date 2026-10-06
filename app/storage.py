@@ -51,8 +51,27 @@ class TripStorage:
             ]
             await asyncio.to_thread(self._write_file, updated_trips)
 
+    async def seed_templates(self, templates_path: Path, owner_id: str) -> None:
+        async with self._lock:
+            trips = await self.list_trips()
+            templates = await asyncio.to_thread(self._read_file_from_path, templates_path)
+            template_trips = [Trip.model_validate(item) for item in templates]
+            existing_ids = {trip.id for trip in trips if trip.owner_id == owner_id}
+            seeded_trips = [
+                template.model_copy(update={"owner_id": owner_id})
+                for template in template_trips
+                if template.id not in existing_ids
+            ]
+            if not seeded_trips:
+                return
+            await asyncio.to_thread(self._write_file, trips + seeded_trips)
+
     def _read_file(self) -> list[dict[str, object]]:
-        with self._file_path.open(encoding="utf-8") as file:
+        return self._read_file_from_path(self._file_path)
+
+    @staticmethod
+    def _read_file_from_path(file_path: Path) -> list[dict[str, object]]:
+        with file_path.open(encoding="utf-8") as file:
             payload = json.load(file)
         if not isinstance(payload, list):
             raise ValueError("Файл поездок должен содержать JSON-массив")
