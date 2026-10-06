@@ -54,3 +54,28 @@ def test_overlapping_trip_returns_conflict(client: TestClient) -> None:
 
     assert response.status_code == 409
     assert "trip-1" in response.json()["detail"]
+
+
+def test_invalid_trip_data_returns_unprocessable_entity(client: TestClient) -> None:
+    client.post(
+        "/api/auth/register",
+        json={
+            "phone": "79001234567",
+            "password": "strong-pass-1",
+            "password_confirm": "strong-pass-1",
+        },
+    )
+    response = client.post(
+        "/api/trips",
+        json={
+            "id": "invalid",
+            "start": "2026-10-01T09:00:00+05:00",
+            "end": "2026-10-01T08:00:00+05:00",
+            "amount": 0,
+            "payment": "online",
+            "commission": 100,
+        },
+    )
+
+    assert response.status_code == 422
+    assert len(response.json()["detail"]) >= 2
