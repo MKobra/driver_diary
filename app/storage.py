@@ -7,6 +7,14 @@ from pathlib import Path
 from app.models import Trip
 
 
+class TripOverlapError(Exception):
+    def __init__(self, conflicting_trip: Trip) -> None:
+        super().__init__(
+            f"Поездка пересекается с существующей поездкой {conflicting_trip.id}: "
+            f"{conflicting_trip.start:%H:%M}–{conflicting_trip.end:%H:%M}"
+        )
+
+
 class TripStorage:
     def __init__(self, file_path: Path) -> None:
         self._file_path = file_path
@@ -22,6 +30,8 @@ class TripStorage:
             for stored_trip in trips:
                 if stored_trip.id == trip.id:
                     return stored_trip, False
+                if trip.start < stored_trip.end and trip.end > stored_trip.start:
+                    raise TripOverlapError(stored_trip)
 
             trips.append(trip)
             await asyncio.to_thread(self._write_file, trips)

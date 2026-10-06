@@ -1,12 +1,12 @@
 from datetime import date
 
-from fastapi import FastAPI, Query, Response
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import DEFAULT_PAGE_SIZE, INDEX_FILE, MAX_PAGE_SIZE, STATIC_DIR, TRIPS_FILE
 from app.models import DaySummary, Trip, TripPage, TripResponse
-from app.storage import TripStorage
+from app.storage import TripOverlapError, TripStorage
 from app.summary import calculate_summary
 
 
@@ -51,7 +51,10 @@ async def get_summary(selected_date: date = Query(alias="date")) -> DaySummary:
 
 @app.post("/api/trips", response_model=TripResponse)
 async def create_trip(trip: Trip, response: Response) -> TripResponse:
-    stored_trip, created = await storage.add_trip(trip)
+    try:
+        stored_trip, created = await storage.add_trip(trip)
+    except TripOverlapError as error:
+        raise HTTPException(status_code=409, detail=str(error)) from error
     response.status_code = 201 if created else 200
     message = "Поездка добавлена" if created else f"Поездка с id={trip.id} уже существует"
     return TripResponse(message=message, trip=stored_trip)

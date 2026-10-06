@@ -41,7 +41,11 @@ function setFormError(message = "") {
 }
 
 function getApiErrorMessage(body) {
-  return body.detail?.map((error) => error.msg.replace(/^Value error,\s*/i, "")).join("; ") || "Не удалось сохранить поездку";
+  if (typeof body.detail === "string") return body.detail;
+  if (Array.isArray(body.detail)) {
+    return body.detail.map((error) => error.msg.replace(/^Value error,\s*/i, "")).join("; ");
+  }
+  return "Не удалось сохранить поездку";
 }
 
 function offsetIso(localValue) {
