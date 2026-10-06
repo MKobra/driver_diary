@@ -2,6 +2,7 @@ const state = { date: new Date() };
 
 const elements = {
   date: document.querySelector("#selected-date"),
+  dateCaption: document.querySelector("#date-caption"),
   notice: document.querySelector("#notice"),
   list: document.querySelector("#trip-list"),
   form: document.querySelector("#trip-form"),
@@ -14,6 +15,7 @@ const elements = {
   cardTotal: document.querySelector("#card-total"),
   cashCount: document.querySelector("#cash-count"),
   cardCount: document.querySelector("#card-count"),
+  addModal: document.querySelector("#add-modal"),
 };
 
 const money = (value) => `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
@@ -57,7 +59,7 @@ function escapeHtml(value) {
 
 function renderTrips(trips) {
   if (!trips.length) {
-    elements.list.innerHTML = '<div class="empty-state">За этот день поездок нет.<br>Добавьте первую запись справа.</div>';
+    elements.list.innerHTML = '<div class="empty-state">За этот день поездок нет.<br>Добавьте первую запись во вкладке «Добавить поездку».</div>';
     return;
   }
   elements.list.innerHTML = trips.map((trip, index) => `
@@ -71,7 +73,9 @@ function renderTrips(trips) {
 
 async function loadDay() {
   const selectedDate = elements.date.value;
-  document.querySelector("#day-label").textContent = displayDate(selectedDate);
+  const formattedDate = displayDate(selectedDate);
+  elements.dateCaption.textContent = formattedDate;
+  document.querySelector("#day-label").textContent = formattedDate;
   elements.list.innerHTML = '<div class="loading-state">Загрузка журнала<span class="loading-dots">...</span></div>';
   setNotice();
   try {
@@ -95,11 +99,27 @@ function shiftDay(amount) {
 }
 
 elements.date.value = dateKey(state.date);
+elements.dateCaption.textContent = displayDate(elements.date.value);
 document.querySelector("#previous-day").addEventListener("click", () => shiftDay(-1));
 document.querySelector("#next-day").addEventListener("click", () => shiftDay(1));
 elements.date.addEventListener("change", () => {
   state.date = new Date(`${elements.date.value}T12:00:00`);
   loadDay();
+});
+
+function setModalState(isOpen) {
+  elements.addModal.classList.toggle("is-open", isOpen);
+  elements.addModal.setAttribute("aria-hidden", String(!isOpen));
+  document.body.classList.toggle("modal-open", isOpen);
+}
+
+document.querySelector("#open-add-modal").addEventListener("click", () => setModalState(true));
+document.querySelector("#close-add-modal").addEventListener("click", () => setModalState(false));
+elements.addModal.addEventListener("click", (event) => {
+  if (event.target === elements.addModal) setModalState(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && elements.addModal.classList.contains("is-open")) setModalState(false);
 });
 
 elements.form.addEventListener("submit", async (event) => {
@@ -120,6 +140,7 @@ elements.form.addEventListener("submit", async (event) => {
     setNotice(body.message);
     if (response.status === 201) elements.form.reset();
     await loadDay();
+    setModalState(false);
   } catch (error) {
     setNotice(error.message, true);
   }
