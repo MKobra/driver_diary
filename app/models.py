@@ -26,6 +26,55 @@ class Trip(BaseModel):
         return self
 
 
+class UserAccount(BaseModel):
+    id: str
+    phone: str
+    password_hash: str
+
+
+class RegisterRequest(BaseModel):
+    phone: str = Field(min_length=10, max_length=32)
+    password: str = Field(min_length=8, max_length=128)
+    password_confirm: str = Field(min_length=8, max_length=128)
+
+    @field_validator("phone")
+    @classmethod
+    def normalize_phone(cls, value: str) -> str:
+        normalized = "".join(character for character in value if character.isdigit())
+        if not 10 <= len(normalized) <= 15:
+            raise ValueError("Укажите корректный номер телефона")
+        return normalized
+
+    @model_validator(mode="after")
+    def validate_passwords(self) -> "RegisterRequest":
+        if self.password != self.password_confirm:
+            raise ValueError("Пароли не совпадают")
+        return self
+
+
+class LoginRequest(BaseModel):
+    phone: str = Field(min_length=10, max_length=32)
+    password: str = Field(min_length=8, max_length=128)
+
+    @field_validator("phone")
+    @classmethod
+    def normalize_phone(cls, value: str) -> str:
+        normalized = "".join(character for character in value if character.isdigit())
+        if not 10 <= len(normalized) <= 15:
+            raise ValueError("Укажите корректный номер телефона")
+        return normalized
+
+
+class UserPublic(BaseModel):
+    id: str
+    phone: str
+
+
+class AuthResponse(BaseModel):
+    message: str
+    user: UserPublic
+
+
 class TripResponse(BaseModel):
     message: str
     trip: Trip

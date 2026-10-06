@@ -1,22 +1,88 @@
 from datetime import date
 
-from fastapi import FastAPI, HTTPException, Query, Response
+from fastapi import FastAPI, HTTPException, Query, Request, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.config import DEFAULT_PAGE_SIZE, INDEX_FILE, MAX_PAGE_SIZE, STATIC_DIR, TRIPS_FILE
-from app.models import DaySummary, Trip, TripPage, TripResponse
+from app.auth import create_session, hash_password, read_session, verify_password
+from app.config import (
+    DEFAULT_PAGE_SIZE,
+    INDEX_FILE,
+    MAX_PAGE_SIZE,
+    SESSION_COOKIE,
+    SESSION_MAX_AGE,
+    SESSION_SECRET,
+    STATIC_DIR,
+    TRIPS_FILE,
+    USERS_FILE,
+)
+from app.models import (
+    AuthResponse,
+    DaySummary,
+    LoginRequest,
+    RegisterRequest,
+    Trip,
+    TripPage,
+    TripResponse,
+    UserPublic,
+)
 from app.storage import TripOverlapError, TripStorage
 from app.summary import calculate_summary
+from app.user_storage import UserStorage
 
 
 app = FastAPI(title="Driver Diary")
 storage = TripStorage(TRIPS_FILE)
+users = UserStorage(USERS_FILE)
 
 
 @app.get("/api/health")
 async def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/api/auth/register", response_model=AuthResponse, status_code=201)
+async def register(payload: RegisterRequest, response: Response) -> AuthResponse:
+    user = await users.create(payload.phone, hash_password(payload.password))
+    if user is None:
+        raise HTTPException(status_code=409, detail="Пользователь с таким телефоном уже существует")
+    _set_session_cookie(response, user.id)
+    return AuthResponse(message="Регистрация выполнена", user=UserPublic(id=user.id, phone=user.phone))
+
+
+@app.post("/api/auth/login", response_model=AuthResponse)
+async def login(payload: LoginRequest, response: Response) -> AuthResponse:
+    user = await users.get_by_phone(payload.phone)
+    if user is None or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Неверный телефон или пароль")
+    _set_session_cookie(response, user.id)
+    return AuthResponse(message="Вход выполнен", user=UserPublic(id=user.id, phone=user.phone))
+
+
+@app.post("/api/auth/logout")
+async def logout(response: Response) -> dict[str, str]:
+    response.delete_cookie(SESSION_COOKIE, path="/")
+    return {"message": "Выход выполнен"}
+
+
+@app.get("/api/auth/me", response_model=UserPublic)
+async def current_user(request: Request) -> UserPublic:
+    user_id = read_session(request.cookies.get(SESSION_COOKIE), SESSION_SECRET, SESSION_MAX_AGE)
+    user = await users.get_by_id(user_id) if user_id else None
+    if user is None:
+        raise HTTPException(status_code=401, detail="Требуется вход в аккаунт")
+    return UserPublic(id=user.id, phone=user.phone)
+
+
+def _set_session_cookie(response: Response, user_id: str) -> None:
+    response.set_cookie(
+        SESSION_COOKIE,
+        create_session(user_id, SESSION_SECRET),
+        max_age=SESSION_MAX_AGE,
+        httponly=True,
+        samesite="lax",
+        path="/",
+    )
 
 
 @app.get("/api/trips", response_model=TripPage)
