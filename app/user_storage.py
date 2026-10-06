@@ -19,15 +19,16 @@ class UserStorage:
         users = await asyncio.to_thread(self._read_file)
         return next((user for user in users if user.id == user_id), None)
 
-    async def create(self, phone: str, password_hash: str) -> UserAccount | None:
+    async def create(self, phone: str, password_hash: str) -> tuple[UserAccount | None, bool]:
         async with self._lock:
             users = await asyncio.to_thread(self._read_file)
             if any(user.phone == phone for user in users):
-                return None
+                return None, False
+            is_first_user = not users
             user = UserAccount(id=str(uuid4()), phone=phone, password_hash=password_hash)
             users.append(user)
             await asyncio.to_thread(self._write_file, users)
-            return user
+            return user, is_first_user
 
     def _read_file(self) -> list[UserAccount]:
         if not self._file_path.exists():

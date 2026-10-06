@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class Trip(BaseModel):
+    owner_id: str = ""
     id: str = Field(min_length=1)
     start: datetime
     end: datetime

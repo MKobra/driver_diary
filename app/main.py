@@ -24,6 +24,7 @@ from app.models import (
     Trip,
     TripPage,
     TripResponse,
+    UserAccount,
     UserPublic,
 )
 from app.storage import TripOverlapError, TripStorage
@@ -43,9 +44,11 @@ async def health_check() -> dict[str, str]:
 
 @app.post("/api/auth/register", response_model=AuthResponse, status_code=201)
 async def register(payload: RegisterRequest, response: Response) -> AuthResponse:
-    user = await users.create(payload.phone, hash_password(payload.password))
+    user, is_first_user = await users.create(payload.phone, hash_password(payload.password))
     if user is None:
         raise HTTPException(status_code=409, detail="Пользователь с таким телефоном уже существует")
+    if is_first_user:
+        await storage.assign_legacy_trips(user.id)
     _set_session_cookie(response, user.id)
     return AuthResponse(message="Регистрация выполнена", user=UserPublic(id=user.id, phone=user.phone))
 
@@ -67,11 +70,16 @@ async def logout(response: Response) -> dict[str, str]:
 
 @app.get("/api/auth/me", response_model=UserPublic)
 async def current_user(request: Request) -> UserPublic:
+    user = await _get_authenticated_user(request)
+    return UserPublic(id=user.id, phone=user.phone)
+
+
+async def _get_authenticated_user(request: Request) -> UserAccount:
     user_id = read_session(request.cookies.get(SESSION_COOKIE), SESSION_SECRET, SESSION_MAX_AGE)
     user = await users.get_by_id(user_id) if user_id else None
     if user is None:
         raise HTTPException(status_code=401, detail="Требуется вход в аккаунт")
-    return UserPublic(id=user.id, phone=user.phone)
+    return user
 
 
 def _set_session_cookie(response: Response, user_id: str) -> None:
@@ -87,13 +95,15 @@ def _set_session_cookie(response: Response, user_id: str) -> None:
 
 @app.get("/api/trips", response_model=TripPage)
 async def get_trips(
+    request: Request,
     selected_date: date = Query(alias="date"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
 ) -> TripPage:
+    user = await _get_authenticated_user(request)
     trips = await storage.list_trips()
     daily_trips = sorted(
-        (trip for trip in trips if trip.start.date() == selected_date),
+        (trip for trip in trips if trip.owner_id == user.id and trip.start.date() == selected_date),
         key=lambda trip: trip.start,
     )
     total = len(daily_trips)
@@ -110,13 +120,16 @@ async def get_trips(
 
 
 @app.get("/api/summary", response_model=DaySummary)
-async def get_summary(selected_date: date = Query(alias="date")) -> DaySummary:
+async def get_summary(request: Request, selected_date: date = Query(alias="date")) -> DaySummary:
+    user = await _get_authenticated_user(request)
     trips = await storage.list_trips()
-    return calculate_summary(trips, selected_date)
+    return calculate_summary((trip for trip in trips if trip.owner_id == user.id), selected_date)
 
 
 @app.post("/api/trips", response_model=TripResponse)
-async def create_trip(trip: Trip, response: Response) -> TripResponse:
+async def create_trip(request: Request, trip: Trip, response: Response) -> TripResponse:
+    user = await _get_authenticated_user(request)
+    trip = trip.model_copy(update={"owner_id": user.id})
     try:
         stored_trip, created = await storage.add_trip(trip)
     except TripOverlapError as error:

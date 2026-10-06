@@ -28,6 +28,8 @@ class TripStorage:
         async with self._lock:
             trips = await self.list_trips()
             for stored_trip in trips:
+                if stored_trip.owner_id != trip.owner_id:
+                    continue
                 if stored_trip.id == trip.id:
                     return stored_trip, False
                 if trip.start < stored_trip.end and trip.end > stored_trip.start:
@@ -36,6 +38,18 @@ class TripStorage:
             trips.append(trip)
             await asyncio.to_thread(self._write_file, trips)
             return trip, True
+
+    async def assign_legacy_trips(self, owner_id: str) -> None:
+        async with self._lock:
+            trips = await self.list_trips()
+            legacy_trips = [trip.model_copy(update={"owner_id": owner_id}) for trip in trips if not trip.owner_id]
+            if not legacy_trips:
+                return
+            updated_trips = [
+                trip.model_copy(update={"owner_id": owner_id}) if not trip.owner_id else trip
+                for trip in trips
+            ]
+            await asyncio.to_thread(self._write_file, updated_trips)
 
     def _read_file(self) -> list[dict[str, object]]:
         with self._file_path.open(encoding="utf-8") as file:
