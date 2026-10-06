@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, timezone
+
 from fastapi.testclient import TestClient
 
 
@@ -79,3 +81,38 @@ def test_invalid_trip_data_returns_unprocessable_entity(client: TestClient) -> N
 
     assert response.status_code == 422
     assert len(response.json()["detail"]) >= 2
+
+
+def test_trip_list_returns_paginated_items(client: TestClient) -> None:
+    client.post(
+        "/api/auth/register",
+        json={
+            "phone": "79001234567",
+            "password": "strong-pass-1",
+            "password_confirm": "strong-pass-1",
+        },
+    )
+    start = datetime(2026, 10, 1, 8, tzinfo=timezone(timedelta(hours=5)))
+    for index in range(11):
+        trip_start = start + timedelta(minutes=index * 30)
+        trip_end = trip_start + timedelta(minutes=30)
+        response = client.post(
+            "/api/trips",
+            json={
+                "id": f"trip-{index}",
+                "start": trip_start.isoformat(),
+                "end": trip_end.isoformat(),
+                "amount": 1000,
+                "payment": "cash",
+                "commission": 100,
+            },
+        )
+        assert response.status_code == 201
+
+    first_page = client.get("/api/trips?date=2026-10-01&page=1&page_size=10")
+    second_page = client.get("/api/trips?date=2026-10-01&page=2&page_size=10")
+
+    assert first_page.json()["total"] == 11
+    assert first_page.json()["total_pages"] == 2
+    assert len(first_page.json()["items"]) == 10
+    assert len(second_page.json()["items"]) == 1
