@@ -24,3 +24,8 @@ class Trip(BaseModel):
         if self.end <= self.start:
             raise ValueError("Время окончания должно быть позже времени начала")
         return self
+
+
+class TripResponse(BaseModel):
+    message: str
+    trip: Trip
