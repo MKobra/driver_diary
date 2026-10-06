@@ -31,6 +31,14 @@ class TripResponse(BaseModel):
     trip: Trip
 
 
+class TripPage(BaseModel):
+    items: list[Trip]
+    page: int
+    page_size: int
+    total: int
+    total_pages: int
+
+
 class PaymentSummary(BaseModel):
     trips_count: int = 0
     revenue: int = 0

@@ -17,9 +17,11 @@ uvicorn app.main:app --reload
 
 Основные API:
 
-- `GET /api/trips?date=2026-10-01` — поездки за день;
+- `GET /api/trips?date=2026-10-01&page=1&page_size=10` — страница поездок за день;
 - `POST /api/trips` — добавить поездку;
 - `GET /api/summary?date=2026-10-01` — дневная сводка.
+
+Ответ списка поездок содержит `items`, `total`, `page`, `page_size` и `total_pages`.
 
 ## Тесты
 

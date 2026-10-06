@@ -4,8 +4,8 @@ from fastapi import FastAPI, Query, Response
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.config import INDEX_FILE, STATIC_DIR, TRIPS_FILE
-from app.models import DaySummary, Trip, TripResponse
+from app.config import DEFAULT_PAGE_SIZE, INDEX_FILE, MAX_PAGE_SIZE, STATIC_DIR, TRIPS_FILE
+from app.models import DaySummary, Trip, TripPage, TripResponse
 from app.storage import TripStorage
 from app.summary import calculate_summary
 
@@ -19,10 +19,28 @@ async def health_check() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/api/trips", response_model=list[Trip])
-async def get_trips(selected_date: date = Query(alias="date")) -> list[Trip]:
+@app.get("/api/trips", response_model=TripPage)
+async def get_trips(
+    selected_date: date = Query(alias="date"),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
+) -> TripPage:
     trips = await storage.list_trips()
-    return [trip for trip in trips if trip.start.date() == selected_date]
+    daily_trips = sorted(
+        (trip for trip in trips if trip.start.date() == selected_date),
+        key=lambda trip: trip.start,
+    )
+    total = len(daily_trips)
+    total_pages = max(1, (total + page_size - 1) // page_size)
+    start_index = (page - 1) * page_size
+    end_index = start_index + page_size
+    return TripPage(
+        items=daily_trips[start_index:end_index],
+        page=page,
+        page_size=page_size,
+        total=total,
+        total_pages=total_pages,
+    )
 
 
 @app.get("/api/summary", response_model=DaySummary)

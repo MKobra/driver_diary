@@ -39,14 +39,14 @@ h1, h2, p { margin-top: 0; }
 h1 { margin-bottom: 0; font-size: clamp(48px, 7vw, 96px); line-height: .9; letter-spacing: -.07em; font-weight: 800; }
 h1 em { color: var(--amber); font-style: normal; }
 h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
-.date-control { min-width: 310px; padding: 18px 18px 16px; border: 1px solid rgba(255, 184, 77, .34); background: rgba(255, 184, 77, .08); }
+.date-control { min-width: 380px; padding: 20px 20px 18px; border: 1px solid rgba(255, 184, 77, .34); background: rgba(255, 184, 77, .08); }
 .date-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; margin-bottom: 14px; }
 .date-heading span, .date-input-wrap span { color: var(--amber); font: 11px "DM Mono", monospace; letter-spacing: .12em; }
 .date-heading strong { color: var(--ink); font-size: 14px; font-weight: 600; text-align: right; }
 .date-picker-row { display: flex; align-items: center; gap: 12px; }
 .date-input-wrap { flex: 1; }
 .date-input-wrap span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 10px; letter-spacing: .04em; }
-.date-control input { display: block; width: 100%; min-height: 46px; padding: 8px 10px; color: var(--ink); background: #171e29; border: 1px solid rgba(237, 241, 242, .22); outline: 0; font: 600 17px "DM Mono", monospace; color-scheme: dark; }
+.date-control input { display: block; width: 100%; min-height: 58px; padding: 8px 12px; color: var(--ink); background: #171e29; border: 1px solid rgba(237, 241, 242, .22); outline: 0; font: 600 20px "DM Mono", monospace; color-scheme: dark; }
 .date-control input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(255, 184, 77, .13); }
 .date-arrow { flex: 0 0 38px; width: 38px; height: 38px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 50%; transition: .2s; }
 .date-arrow:hover { color: #10151f; background: var(--amber); border-color: var(--amber); }
@@ -75,14 +75,21 @@ h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
 .panel-heading--compact { padding-bottom: 16px; }
 .count-badge { padding: 6px 8px; color: var(--muted); border: 1px solid var(--line); font: 10px "DM Mono", monospace; text-transform: uppercase; }
 .trip-list { min-height: 260px; }
-.trip-row { display: grid; grid-template-columns: 66px 1fr auto auto; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); animation: appear .3s ease both; }
+.trip-row { display: grid; grid-template-columns: 66px 1fr auto auto; align-items: center; width: 100%; gap: 18px; padding: 18px 0; color: var(--ink); text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); animation: appear .3s ease both; }
+.trip-row:hover { background: rgba(255, 184, 77, .06); }
 .trip-time { color: var(--amber); font: 14px "DM Mono", monospace; }
-.trip-id { margin-bottom: 4px; font-size: 15px; font-weight: 700; }
-.trip-route { color: var(--muted); font-size: 13px; }
+.trip-id { display: block; margin-bottom: 4px; font-size: 15px; font-weight: 700; }
+.trip-route { display: block; color: var(--muted); font-size: 13px; }
 .trip-payment { padding: 5px 8px; color: var(--muted); border: 1px solid var(--line); font: 10px "DM Mono", monospace; text-transform: uppercase; }
-.trip-amount { font: 15px "DM Mono", monospace; }
+.trip-figures { display: flex; flex-direction: column; align-items: end; gap: 3px; }
+.trip-figures strong { color: var(--cyan); font: 16px "DM Mono", monospace; }
+.trip-figures small { color: var(--muted); font-size: 11px; }
 .loading-state, .empty-state { padding: 72px 12px; color: var(--muted); text-align: center; font: 13px "DM Mono", monospace; line-height: 1.7; }
 .loading-dots { color: var(--amber); animation: blink 1s infinite; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: 14px; padding-top: 20px; color: var(--muted); font: 12px "DM Mono", monospace; }
+.page-arrow { width: 34px; height: 34px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 50%; }
+.page-arrow:hover:not(:disabled) { color: #10151f; background: var(--amber); border-color: var(--amber); }
+.page-arrow:disabled { cursor: not-allowed; opacity: .28; }
 .side-column { display: grid; gap: 12px; align-content: start; }
 .payment-row { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 11px; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .payment-row:last-child { border-bottom: 0; padding-bottom: 0; }
@@ -112,6 +119,19 @@ h2 { margin-bottom: 0; font-size: 25px; letter-spacing: -.04em; }
 .modal.is-open .add-layout { transform: translateY(0); }
 .modal-close { width: 34px; height: 34px; color: var(--muted); background: transparent; border: 1px solid var(--line); font-size: 24px; line-height: 1; }
 .modal-close:hover { color: var(--ink); border-color: var(--amber); }
+.trip-detail-dialog { width: min(100%, 620px); padding: 28px; }
+.detail-meta { display: flex; justify-content: space-between; padding: 20px 0; color: var(--muted); font: 12px "DM Mono", monospace; text-transform: uppercase; }
+.detail-times { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.detail-times div { display: flex; flex-direction: column; gap: 7px; }
+.detail-times small, .detail-money small { color: var(--muted); font: 11px "DM Mono", monospace; text-transform: uppercase; }
+.detail-times strong { font: 28px "DM Mono", monospace; }
+.detail-times > span { color: var(--amber); font-size: 22px; }
+.detail-money { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 12px; padding-top: 22px; }
+.detail-money div { padding: 15px; background: rgba(255, 255, 255, .04); }
+.detail-money strong { display: block; margin-top: 9px; font: 17px "DM Mono", monospace; }
+.detail-money--commission strong { color: var(--red); }
+.detail-money--net { background: var(--amber) !important; color: #131313; }
+.detail-money--net small { color: #5f461d; }
 footer { display: flex; justify-content: space-between; padding: 24px 0 35px; color: var(--muted); font: 9px "DM Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
 @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes blink { 50% { opacity: .2; } }
@@ -138,6 +158,9 @@ footer { display: flex; justify-content: space-between; padding: 24px 0 35px; co
   .add-trip-button { padding: 11px 10px; font-size: 12px; }
   .modal { padding: 12px; }
   .modal .add-layout { max-height: calc(100vh - 24px); padding: 18px; }
+  .trip-detail-dialog { padding: 18px; }
+  .detail-times strong { font-size: 22px; }
+  .detail-money { grid-template-columns: 1fr; }
   .panel { padding: 18px; }
   .metric-card { min-height: 145px; padding: 18px; }
   .trip-row { grid-template-columns: 55px 1fr auto; gap: 10px; }
