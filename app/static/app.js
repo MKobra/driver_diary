@@ -24,6 +24,11 @@ const elements = {
   pageInfo: document.querySelector("#page-info"),
   previousPage: document.querySelector("#previous-page"),
   nextPage: document.querySelector("#next-page"),
+  authScreen: document.querySelector("#auth-screen"),
+  appMain: document.querySelector("#app-main"),
+  authError: document.querySelector("#auth-error"),
+  accountActions: document.querySelector("#account-actions"),
+  accountPhone: document.querySelector("#account-phone"),
 };
 
 const money = (value) => `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
@@ -46,6 +51,46 @@ function getApiErrorMessage(body) {
     return body.detail.map((error) => error.msg.replace(/^Value error,\s*/i, "")).join("; ");
   }
   return "Не удалось сохранить поездку";
+}
+
+function setAuthError(message = "") {
+  elements.authError.textContent = message;
+  elements.authError.hidden = !message;
+}
+
+function showAuthenticated(user) {
+  elements.authScreen.hidden = true;
+  elements.appMain.hidden = false;
+  elements.accountActions.hidden = false;
+  elements.accountPhone.textContent = `+${user.phone}`;
+  loadDay(true);
+}
+
+function showGuest() {
+  elements.authScreen.hidden = false;
+  elements.appMain.hidden = true;
+  elements.accountActions.hidden = true;
+}
+
+async function submitAuthForm(event) {
+  event.preventDefault();
+  setAuthError();
+  const form = event.currentTarget;
+  const payload = Object.fromEntries(new FormData(form));
+  const endpoint = form.id === "register-form" ? "/api/auth/register" : "/api/auth/login";
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(getApiErrorMessage(body));
+    form.reset();
+    showAuthenticated(body.user);
+  } catch (error) {
+    setAuthError(error.message);
+  }
 }
 
 function prepareTripForm() {
@@ -234,6 +279,21 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && elements.tripModal.classList.contains("is-open")) setTripModalState(false);
 });
 
+document.querySelectorAll(".auth-tab").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".auth-tab").forEach((tab) => tab.classList.remove("is-active"));
+    document.querySelectorAll(".auth-form").forEach((form) => { form.hidden = true; });
+    button.classList.add("is-active");
+    document.querySelector(`#${button.dataset.authView}`).hidden = false;
+    setAuthError();
+  });
+});
+document.querySelectorAll(".auth-form").forEach((form) => form.addEventListener("submit", submitAuthForm));
+document.querySelector("#logout-button").addEventListener("click", async () => {
+  await fetch("/api/auth/logout", { method: "POST" });
+  showGuest();
+});
+
 elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
   setFormError();
@@ -264,4 +324,14 @@ elements.form.addEventListener("submit", async (event) => {
   }
 });
 
-loadDay();
+async function boot() {
+  try {
+    const response = await fetch("/api/auth/me");
+    if (!response.ok) throw new Error("guest");
+    showAuthenticated(await response.json());
+  } catch {
+    showGuest();
+  }
+}
+
+boot();

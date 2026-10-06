@@ -10,6 +10,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -33,6 +34,20 @@ body.modal-open { overflow: hidden; }
 .brand small { margin-top: 5px; color: var(--muted); font-size: 10px; letter-spacing: .04em; }
 .status-pill { color: var(--cyan); border: 1px solid rgba(125,225,209,.25); border-radius: 99px; padding: 7px 11px; font-family: "DM Mono", monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
 .status-dot { display: inline-block; width: 6px; height: 6px; margin-right: 6px; background: var(--cyan); border-radius: 50%; box-shadow: 0 0 10px var(--cyan); }
+.account-actions { display: flex; align-items: center; gap: 10px; }
+.account-phone { color: var(--cyan); font: 12px "DM Mono", monospace; }
+.logout-button { padding: 8px 11px; color: var(--muted); background: transparent; border: 1px solid var(--line); font-size: 11px; }
+.logout-button:hover { color: var(--ink); border-color: var(--amber); }
+.auth-screen { display: grid; place-items: center; min-height: calc(100vh - 104px); padding: 70px 0; }
+.auth-card { width: min(100%, 470px); padding: 38px; background: rgba(25, 32, 43, .86); border: 1px solid var(--line); box-shadow: 0 24px 80px rgba(0, 0, 0, .22); }
+.auth-card h1 { margin-bottom: 20px; font-size: clamp(42px, 6vw, 68px); }
+.auth-intro { max-width: 330px; margin-bottom: 28px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.auth-tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.auth-tab { padding: 11px 14px; color: var(--muted); background: transparent; border: 0; border-bottom: 2px solid transparent; font-size: 13px; font-weight: 700; }
+.auth-tab.is-active { color: var(--amber); border-color: var(--amber); }
+.auth-error { margin-bottom: 16px; padding: 12px 14px; color: #ffe9e5; background: #542b2d; border: 1px solid rgba(255, 132, 110, .75); font-size: 13px; line-height: 1.4; }
+.auth-form .field--wide { margin-top: 15px; }
+.auth-form .submit-button { margin-top: 25px; }
 .hero { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 76px 0 42px; }
 .eyebrow { margin: 0 0 12px; color: var(--amber); font: 500 10px "DM Mono", monospace; letter-spacing: .18em; }
 h1, h2, p { margin-top: 0; }
@@ -158,6 +173,9 @@ footer { display: flex; justify-content: space-between; padding: 24px 0 35px; co
 @media (max-width: 500px) {
   .shell { width: calc(100% - 24px); }
   .topbar { padding-top: 18px; }
+  .account-phone { display: none; }
+  .auth-screen { min-height: calc(100vh - 80px); padding: 30px 0; }
+  .auth-card { padding: 24px 18px; }
   h1 { font-size: 57px; }
   .date-control { min-width: 0; width: 100%; }
   .date-heading strong { font-size: 13px; }

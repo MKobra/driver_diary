@@ -20,10 +20,37 @@
             <small>дневник водителя</small>
           </span>
         </a>
-        <div class="status-pill"><span class="status-dot"></span> онлайн</div>
+        <div class="account-actions" id="account-actions" hidden>
+          <span class="account-phone" id="account-phone"></span>
+          <button class="logout-button" id="logout-button" type="button">Выйти</button>
+        </div>
       </header>
 
-      <main>
+      <section class="auth-screen" id="auth-screen" aria-labelledby="auth-title" hidden>
+        <div class="auth-card">
+          <p class="eyebrow">ЛИЧНЫЙ ДОСТУП / SHIFTLOG</p>
+          <h1 id="auth-title">Ваш журнал.<br><em>Ваши правила.</em></h1>
+          <p class="auth-intro">Войдите, чтобы видеть свои поездки и сводку смен.</p>
+          <div class="auth-tabs" role="tablist">
+            <button class="auth-tab is-active" data-auth-view="login-form" type="button">Войти</button>
+            <button class="auth-tab" data-auth-view="register-form" type="button">Регистрация</button>
+          </div>
+          <div class="auth-error" id="auth-error" role="alert" hidden></div>
+          <form class="auth-form" id="login-form">
+            <label class="field field--wide">Номер телефона<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 123-45-67" required></label>
+            <label class="field field--wide">Пароль<input name="password" type="password" autocomplete="current-password" required></label>
+            <button class="submit-button" type="submit"><span>Войти в журнал</span><b>↗</b></button>
+          </form>
+          <form class="auth-form" id="register-form" hidden>
+            <label class="field field--wide">Номер телефона<input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 900 123-45-67" required></label>
+            <label class="field field--wide">Пароль<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+            <label class="field field--wide">Повторите пароль<input name="password_confirm" type="password" autocomplete="new-password" minlength="8" required></label>
+            <button class="submit-button" type="submit"><span>Создать аккаунт</span><b>↗</b></button>
+          </form>
+        </div>
+      </section>
+
+      <main id="app-main" hidden>
         <section class="hero">
           <div>
             <p class="eyebrow">ЛИЧНАЯ ПАНЕЛЬ / СМЕНА</p>
@@ -132,7 +159,7 @@
                 <button id="close-form-error" type="button" aria-label="Закрыть сообщение об ошибке">×</button>
                 </div>
                 <form id="trip-form">
-                  <label class="field field--wide">ID поездки<input name="id" required placeholder="например, t-0042"></label>
+                  <label class="field field--wide">Номер поездки<input name="id" required placeholder="например, t-0042"></label>
                   <div class="field-row">
                     <label class="field">Дата начала<input name="start-date" type="date" required></label>
                     <label class="field">Время начала<input name="start-time" type="text" inputmode="numeric" maxlength="5" placeholder="23:58" autocomplete="off" required></label>

@@ -17,6 +17,10 @@ uvicorn app.main:app --reload
 
 Основные API:
 
+- `POST /api/auth/register` — регистрация по номеру телефона;
+- `POST /api/auth/login` — вход в аккаунт;
+- `POST /api/auth/logout` — выход;
+- `GET /api/auth/me` — текущий пользователь;
 - `GET /api/trips?date=2026-10-01&page=1&page_size=10` — страница поездок за день;
 - `POST /api/trips` — добавить поездку;
 - `GET /api/summary?date=2026-10-01` — дневная сводка.
