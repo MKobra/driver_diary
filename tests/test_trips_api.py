@@ -116,3 +116,42 @@ def test_trip_list_returns_paginated_items(client: TestClient) -> None:
     assert first_page.json()["total_pages"] == 2
     assert len(first_page.json()["items"]) == 10
     assert len(second_page.json()["items"]) == 1
+
+
+def test_each_driver_sees_only_own_trips(client: TestClient) -> None:
+    first_driver = client.post(
+        "/api/auth/register",
+        json={
+            "phone": "79001234567",
+            "password": "strong-pass-1",
+            "password_confirm": "strong-pass-1",
+        },
+    )
+    first_trip = client.post(
+        "/api/trips",
+        json={
+            "id": "private-trip",
+            "start": "2026-10-01T08:00:00+05:00",
+            "end": "2026-10-01T08:30:00+05:00",
+            "amount": 1000,
+            "payment": "cash",
+            "commission": 100,
+        },
+    )
+    second_client = TestClient(client.app)
+    second_driver = second_client.post(
+        "/api/auth/register",
+        json={
+            "phone": "79001234568",
+            "password": "strong-pass-2",
+            "password_confirm": "strong-pass-2",
+        },
+    )
+    second_trips = second_client.get("/api/trips?date=2026-10-01&page=1&page_size=10")
+    first_trips = client.get("/api/trips?date=2026-10-01&page=1&page_size=10")
+
+    assert first_driver.status_code == 201
+    assert first_trip.status_code == 201
+    assert second_driver.status_code == 201
+    assert second_trips.json()["total"] == 0
+    assert first_trips.json()["total"] == 1
